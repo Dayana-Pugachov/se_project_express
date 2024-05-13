@@ -8,6 +8,11 @@ const {
 module.exports.getClothingItems = (req, res) => {
   ClothingItem.find({})
     .then((clothingItems) => {
+      if (clothingItems === null) {
+        const error = new Error("Data not found");
+        error.name("DocumentNotFoundError");
+        throw error;
+      }
       res.status(200).send({ data: clothingItems });
     })
     .catch((err) => {
@@ -28,7 +33,6 @@ module.exports.createClothingItem = (req, res) => {
   const { name, imageUrl, weather } = req.body;
   ClothingItem.create({ name, imageUrl, weather, owner: req.user })
     .then((clothingItem) => {
-      console.log(req);
       res.status(201).send({ data: clothingItem });
     })
     .catch((err) => {
