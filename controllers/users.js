@@ -17,11 +17,10 @@ module.exports.getUsers = (req, res) => {
       if (err.name === "DocumentNotFoundError") {
         return res.status(DOCUMENT_NOT_FOUND).send({ message: err.message });
       }
-      {
-        return res
-          .status(SERVER_ERROR)
-          .send({ message: "An error has occured on the server" });
-      }
+
+      return res
+        .status(SERVER_ERROR)
+        .send({ message: "An error has occured on the server" });
     });
 };
 
@@ -36,14 +35,14 @@ module.exports.getUser = (req, res) => {
       console.log(err.name);
       if (err.name === "CastError") {
         return res.status(INVALID_DATA).send({ message: err.message });
-      } else if (err.name === "DocumentNotFoundError") {
+      }
+      if (err.name === "DocumentNotFoundError") {
         return res.status(DOCUMENT_NOT_FOUND).send({ message: err.message });
       }
-      {
-        return res
-          .status(SERVER_ERROR)
-          .send({ message: "An error has occured on the server" });
-      }
+
+      return res
+        .status(SERVER_ERROR)
+        .send({ message: "An error has occured on the server" });
     });
 };
 
@@ -58,10 +57,9 @@ module.exports.createUser = (req, res) => {
       if (err.name === "ValidationError") {
         return res.status(INVALID_DATA).send({ message: err.message });
       }
-      {
-        return res
-          .status(SERVER_ERROR)
-          .send({ message: "An error has occured on the server" });
-      }
+
+      return res
+        .status(SERVER_ERROR)
+        .send({ message: "An error has occured on the server" });
     });
 };
