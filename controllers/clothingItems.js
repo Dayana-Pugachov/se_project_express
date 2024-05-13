@@ -8,20 +8,11 @@ const {
 module.exports.getClothingItems = (req, res) => {
   ClothingItem.find({})
     .then((clothingItems) => {
-      if (clothingItems === null) {
-        const error = new Error("Data not found");
-        error.name("DocumentNotFoundError");
-        throw error;
-      }
-      res.status(200).send({ data: clothingItems });
+      res.send({ data: clothingItems });
     })
     .catch((err) => {
       console.error(err);
       console.log(err.name);
-      if (err.name === "DocumentNotFoundError") {
-        return res.status(DOCUMENT_NOT_FOUND).send({ message: err.message });
-      }
-
       return res
         .status(SERVER_ERROR)
         .send({ message: "An error has occured on the server" });
@@ -39,7 +30,7 @@ module.exports.createClothingItem = (req, res) => {
       console.error(err);
       console.log(err.name);
       if (err.name === "ValidationError") {
-        return res.status(INVALID_DATA).send({ message: err.message });
+        return res.status(INVALID_DATA).send({ message: "Invalid data." });
       }
 
       return res
@@ -51,14 +42,16 @@ module.exports.createClothingItem = (req, res) => {
 module.exports.deleteClothingItem = (req, res) => {
   ClothingItem.findByIdAndRemove(req.params.itemId)
     .orFail()
-    .then((clothingItem) => res.status(200).send({ data: clothingItem }))
+    .then((clothingItem) => res.send({ data: clothingItem }))
     .catch((err) => {
       console.error(err);
       if (err.name === "CastError") {
-        return res.status(INVALID_DATA).send({ message: err.message });
+        return res.status(INVALID_DATA).send({ message: "Invalid data" });
       }
       if (err.name === "DocumentNotFoundError") {
-        return res.status(DOCUMENT_NOT_FOUND).send({ message: err.message });
+        return res
+          .status(DOCUMENT_NOT_FOUND)
+          .send({ message: "The requested resource is not found" });
       }
 
       return res
@@ -74,15 +67,17 @@ module.exports.likeClothingItem = (req, res) => {
     { new: true }
   )
     .orFail()
-    .then((clothingItem) => res.status(200).send({ data: clothingItem }))
+    .then((clothingItem) => res.send({ data: clothingItem }))
     .catch((err) => {
       console.error(err);
       console.log(err.name);
       if (err.name === "CastError") {
-        return res.status(INVALID_DATA).send({ message: err.message });
+        return res.status(INVALID_DATA).send({ message: "Invalid data" });
       }
       if (err.name === "DocumentNotFoundError") {
-        return res.status(DOCUMENT_NOT_FOUND).send({ message: err.message });
+        return res
+          .status(DOCUMENT_NOT_FOUND)
+          .send({ message: "The requested resource is not found" });
       }
 
       return res
@@ -98,15 +93,17 @@ module.exports.dislikeClothingItem = (req, res) => {
     { new: true }
   )
     .orFail()
-    .then((clothingItem) => res.status(200).send({ data: clothingItem }))
+    .then((clothingItem) => res.send({ data: clothingItem }))
     .catch((err) => {
       console.error(err);
       console.log(err.name);
       if (err.name === "CastError") {
-        return res.status(INVALID_DATA).send({ message: err.message });
+        return res.status(INVALID_DATA).send({ message: "Invalid data" });
       }
       if (err.name === "DocumentNotFoundError") {
-        return res.status(DOCUMENT_NOT_FOUND).send({ message: err.message });
+        return res
+          .status(DOCUMENT_NOT_FOUND)
+          .send({ message: "The requested resource is not found" });
       }
 
       return res

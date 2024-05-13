@@ -7,17 +7,12 @@ const {
 
 module.exports.getUsers = (req, res) => {
   User.find({})
-    .orFail()
     .then((users) => {
-      res.status(200).send({ data: users });
+      res.send({ data: users });
     })
     .catch((err) => {
       console.error(err);
       console.log(err.name);
-      if (err.name === "DocumentNotFoundError") {
-        return res.status(DOCUMENT_NOT_FOUND).send({ message: err.message });
-      }
-
       return res
         .status(SERVER_ERROR)
         .send({ message: "An error has occured on the server" });
@@ -28,16 +23,18 @@ module.exports.getUser = (req, res) => {
   User.findById(req.params.userId)
     .orFail()
     .then((user) => {
-      res.status(200).send({ data: user });
+      res.send({ data: user });
     })
     .catch((err) => {
       console.error(err);
       console.log(err.name);
       if (err.name === "CastError") {
-        return res.status(INVALID_DATA).send({ message: err.message });
+        return res.status(INVALID_DATA).send({ message: "Invalid data" });
       }
       if (err.name === "DocumentNotFoundError") {
-        return res.status(DOCUMENT_NOT_FOUND).send({ message: err.message });
+        return res
+          .status(DOCUMENT_NOT_FOUND)
+          .send({ message: "The requested resource is not found" });
       }
 
       return res
@@ -55,7 +52,7 @@ module.exports.createUser = (req, res) => {
     .catch((err) => {
       console.error(err);
       if (err.name === "ValidationError") {
-        return res.status(INVALID_DATA).send({ message: err.message });
+        return res.status(INVALID_DATA).send({ message: "Invalid data" });
       }
 
       return res
