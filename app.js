@@ -3,13 +3,6 @@ const mongoose = require("mongoose");
 
 const app = express();
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: "6640db3832839510044b9f18",
-  };
-  next();
-});
-
 const mainRouter = require("./routes/index");
 
 mongoose.connect("mongodb://127.0.0.1:27017/wtwr_db");

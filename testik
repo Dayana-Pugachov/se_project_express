@@ -1,0 +1,4 @@
+const noMatchError = new Error("Incorrect email or password");
+noMatchError.name = "yep";
+const credentialMissingErr = new Error("Both email and password are required");
+credentialMissingErr.name = "no";

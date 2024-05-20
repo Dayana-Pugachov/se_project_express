@@ -3,6 +3,7 @@ const {
   INVALID_DATA,
   DOCUMENT_NOT_FOUND,
   SERVER_ERROR,
+  FORBIDDEN,
 } = require("../utils/errors");
 
 module.exports.getClothingItems = (req, res) => {
@@ -20,8 +21,9 @@ module.exports.getClothingItems = (req, res) => {
 };
 
 module.exports.createClothingItem = (req, res) => {
-  console.log(req.user._id);
-  const { name, imageUrl, weather } = req.body;
+  const { name, imageUrl, weather, userId = req.user } = req.body;
+  console.log({ data: req.body });
+  console.log({ user: userId });
   ClothingItem.create({ name, imageUrl, weather, owner: req.user })
     .then((clothingItem) => {
       res.status(201).send({ data: clothingItem });
@@ -42,9 +44,21 @@ module.exports.createClothingItem = (req, res) => {
 module.exports.deleteClothingItem = (req, res) => {
   ClothingItem.findByIdAndRemove(req.params.itemId)
     .orFail()
-    .then((clothingItem) => res.send({ data: clothingItem }))
+    .then((clothingItem) => {
+      if (!clothingItem.owner._id === req.user._id) {
+        const error = new Error("No permisson");
+        error.statusCode = FORBIDDEN;
+        throw error;
+      }
+      res.send({ data: clothingItem });
+    })
     .catch((err) => {
       console.error(err);
+      if (err.code === "FORBIDDEN") {
+        return res
+          .status(FORBIDDEN)
+          .send({ message: "No permission to access this resource" });
+      }
       if (err.name === "CastError") {
         return res.status(INVALID_DATA).send({ message: "Invalid data" });
       }
