@@ -21,10 +21,8 @@ module.exports.getClothingItems = (req, res) => {
 };
 
 module.exports.createClothingItem = (req, res) => {
-  const { name, imageUrl, weather, userId = req.user } = req.body;
-  console.log({ data: req.body });
-  console.log({ user: userId });
-  ClothingItem.create({ name, imageUrl, weather, owner: req.user })
+  const { name, imageUrl, weather } = req.body;
+  ClothingItem.create({ name, imageUrl, weather, owner: req.user._id })
     .then((clothingItem) => {
       res.status(201).send({ data: clothingItem });
     })
@@ -45,19 +43,20 @@ module.exports.deleteClothingItem = (req, res) => {
   ClothingItem.findByIdAndRemove(req.params.itemId)
     .orFail()
     .then((clothingItem) => {
-      if (!clothingItem.owner._id === req.user._id) {
+      console.log({ owner: clothingItem.owner });
+      console.log({ user: req.user._id });
+      if (!clothingItem.owner.equals(req.user._id)) {
         const error = new Error("No permisson");
-        error.statusCode = FORBIDDEN;
         throw error;
       }
       res.send({ data: clothingItem });
     })
     .catch((err) => {
       console.error(err);
-      if (err.code === "FORBIDDEN") {
+      if (err.message === "No permisson") {
         return res
           .status(FORBIDDEN)
-          .send({ message: "No permission to access this resource" });
+          .send({ message: "No permission to delete this resource" });
       }
       if (err.name === "CastError") {
         return res.status(INVALID_DATA).send({ message: "Invalid data" });

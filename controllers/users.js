@@ -10,20 +10,6 @@ const {
 } = require("../utils/errors");
 const { JWT_SECRET } = require("../utils/config");
 
-/*module.exports.getUsers = (req, res) => {
-  User.find({})
-    .then((users) => {
-      res.send({ data: users });
-    })
-    .catch((err) => {
-      console.error(err);
-      console.log(err.name);
-      return res
-        .status(SERVER_ERROR)
-        .send({ message: "An error has occured on the server" });
-    });
-};*/
-
 module.exports.getCurrentUser = (req, res) => {
   const { _id } = req.user;
   User.findById(_id)
