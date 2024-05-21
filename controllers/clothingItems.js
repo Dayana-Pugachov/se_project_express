@@ -40,24 +40,20 @@ module.exports.createClothingItem = (req, res) => {
 };
 
 module.exports.deleteClothingItem = (req, res) => {
-  ClothingItem.findByIdAndRemove(req.params.itemId)
+  ClothingItem.findById(req.params.itemId)
     .orFail()
     .then((clothingItem) => {
-      console.log({ owner: clothingItem.owner });
-      console.log({ user: req.user._id });
       if (!clothingItem.owner.equals(req.user._id)) {
-        const error = new Error("No permisson");
-        throw error;
-      }
-      res.send({ data: clothingItem });
-    })
-    .catch((err) => {
-      console.error(err);
-      if (err.message === "No permisson") {
         return res
           .status(FORBIDDEN)
           .send({ message: "No permission to delete this resource" });
       }
+      return clothingItem
+        .deleteOne()
+        .then(() => res.send({ message: "Item has been deleted" }));
+    })
+    .catch((err) => {
+      console.error(err);
       if (err.name === "CastError") {
         return res.status(INVALID_DATA).send({ message: "Invalid data" });
       }

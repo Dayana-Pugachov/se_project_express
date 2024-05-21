@@ -81,9 +81,14 @@ module.exports.login = (req, res) => {
     })
     .catch((err) => {
       console.error(err);
+      if (err.message === "Incorrect email or password") {
+        return res
+          .status(UNAUTHORIZED)
+          .send({ message: "Access is denied due to invalid credentials" });
+      }
       return res
-        .status(UNAUTHORIZED)
-        .send({ message: "Access is denied due to invalid credentials" });
+        .status(SERVER_ERROR)
+        .send({ message: "An error has occured on the server" });
     });
 };
 
