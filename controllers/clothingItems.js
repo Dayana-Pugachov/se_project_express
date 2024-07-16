@@ -1,75 +1,44 @@
 const ClothingItem = require("../models/clothingItem");
-const {
-  INVALID_DATA,
-  DOCUMENT_NOT_FOUND,
-  SERVER_ERROR,
-  FORBIDDEN,
-} = require("../utils/errors");
+const { ForbiddenError } = require("../utils/error-constructors");
 
-module.exports.getClothingItems = (req, res) => {
+module.exports.getClothingItems = (req, res, next) => {
   ClothingItem.find({})
     .then((clothingItems) => {
       res.send({ data: clothingItems });
     })
     .catch((err) => {
-      console.error(err);
-      console.log(err.name);
-      return res
-        .status(SERVER_ERROR)
-        .send({ message: "An error has occured on the server" });
+      next(err);
     });
 };
 
-module.exports.createClothingItem = (req, res) => {
+module.exports.createClothingItem = (req, res, next) => {
   const { name, imageUrl, weather } = req.body;
   ClothingItem.create({ name, imageUrl, weather, owner: req.user._id })
     .then((clothingItem) => {
       res.status(201).send({ data: clothingItem });
     })
     .catch((err) => {
-      console.error(err);
-      console.log(err.name);
-      if (err.name === "ValidationError") {
-        return res.status(INVALID_DATA).send({ message: "Invalid data." });
-      }
-
-      return res
-        .status(SERVER_ERROR)
-        .send({ message: "An error has occured on the server" });
+      next(err);
     });
 };
 
-module.exports.deleteClothingItem = (req, res) => {
+module.exports.deleteClothingItem = (req, res, next) => {
   ClothingItem.findById(req.params.itemId)
     .orFail()
     .then((clothingItem) => {
       if (!clothingItem.owner.equals(req.user._id)) {
-        return res
-          .status(FORBIDDEN)
-          .send({ message: "No permission to delete this resource" });
+        throw new ForbiddenError("No permission to delete this resource");
       }
       return clothingItem
         .deleteOne()
         .then(() => res.send({ message: "Item has been deleted" }));
     })
     .catch((err) => {
-      console.error(err);
-      if (err.name === "CastError") {
-        return res.status(INVALID_DATA).send({ message: "Invalid data" });
-      }
-      if (err.name === "DocumentNotFoundError") {
-        return res
-          .status(DOCUMENT_NOT_FOUND)
-          .send({ message: "The requested resource is not found" });
-      }
-
-      return res
-        .status(SERVER_ERROR)
-        .send({ message: "An error has occured on the server" });
+      next(err);
     });
 };
 
-module.exports.likeClothingItem = (req, res) => {
+module.exports.likeClothingItem = (req, res, next) => {
   ClothingItem.findByIdAndUpdate(
     req.params.itemId,
     { $addToSet: { likes: req.user._id } },
@@ -78,24 +47,11 @@ module.exports.likeClothingItem = (req, res) => {
     .orFail()
     .then((clothingItem) => res.send({ data: clothingItem }))
     .catch((err) => {
-      console.error(err);
-      console.log(err.name);
-      if (err.name === "CastError") {
-        return res.status(INVALID_DATA).send({ message: "Invalid data" });
-      }
-      if (err.name === "DocumentNotFoundError") {
-        return res
-          .status(DOCUMENT_NOT_FOUND)
-          .send({ message: "The requested resource is not found" });
-      }
-
-      return res
-        .status(SERVER_ERROR)
-        .send({ message: "An error has occured on the server" });
+      next(err);
     });
 };
 
-module.exports.dislikeClothingItem = (req, res) => {
+module.exports.dislikeClothingItem = (req, res, next) => {
   ClothingItem.findByIdAndUpdate(
     req.params.itemId,
     { $pull: { likes: req.user._id } },
@@ -104,19 +60,6 @@ module.exports.dislikeClothingItem = (req, res) => {
     .orFail()
     .then((clothingItem) => res.send({ data: clothingItem }))
     .catch((err) => {
-      console.error(err);
-      console.log(err.name);
-      if (err.name === "CastError") {
-        return res.status(INVALID_DATA).send({ message: "Invalid data" });
-      }
-      if (err.name === "DocumentNotFoundError") {
-        return res
-          .status(DOCUMENT_NOT_FOUND)
-          .send({ message: "The requested resource is not found" });
-      }
-
-      return res
-        .status(SERVER_ERROR)
-        .send({ message: "An error has occured on the server" });
+      next(err);
     });
 };

@@ -8,9 +8,10 @@ const {
   DUPLICATE_ERROR,
   UNAUTHORIZED,
 } = require("../utils/errors");
+const { BadRequestError } = require("../utils/error-constructors");
 const { JWT_SECRET } = require("../utils/config");
 
-module.exports.getCurrentUser = (req, res) => {
+module.exports.getCurrentUser = (req, res, next) => {
   const { _id } = req.user;
   User.findById(_id)
     .orFail()
@@ -18,24 +19,11 @@ module.exports.getCurrentUser = (req, res) => {
       res.send({ data: user });
     })
     .catch((err) => {
-      console.error(err);
-      console.log(err.name);
-      if (err.name === "CastError") {
-        return res.status(INVALID_DATA).send({ message: "Invalid data" });
-      }
-      if (err.name === "DocumentNotFoundError") {
-        return res
-          .status(DOCUMENT_NOT_FOUND)
-          .send({ message: "The requested resource is not found" });
-      }
-
-      return res
-        .status(SERVER_ERROR)
-        .send({ message: "An error has occured on the server" });
+      next(err);
     });
 };
 
-module.exports.createUser = (req, res) => {
+module.exports.createUser = (req, res, next) => {
   const { name, avatar, email, password } = req.body;
 
   bcrypt
@@ -47,7 +35,12 @@ module.exports.createUser = (req, res) => {
         .send({ name: user.name, avatar: user.avatar, email: user.email });
     })
     .catch((err) => {
-      console.error(err);
+      next(err);
+    });
+};
+
+/*
+console.error(err);
       if (err.code === 11000) {
         return res
           .status(DUPLICATE_ERROR)
@@ -60,16 +53,13 @@ module.exports.createUser = (req, res) => {
       return res
         .status(SERVER_ERROR)
         .send({ message: "An error has occured on the server" });
-    });
-};
+*/
 
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res
-      .status(INVALID_DATA)
-      .send({ message: "Email and password are required" });
+    throw new BadRequestError("Email and password are required");
   }
 
   User.findUserByCredentials(email, password)
@@ -80,19 +70,11 @@ module.exports.login = (req, res) => {
       res.send({ token });
     })
     .catch((err) => {
-      console.error(err);
-      if (err.message === "Incorrect email or password") {
-        return res
-          .status(UNAUTHORIZED)
-          .send({ message: "Access is denied due to invalid credentials" });
-      }
-      return res
-        .status(SERVER_ERROR)
-        .send({ message: "An error has occured on the server" });
+      next(err);
     });
 };
 
-module.exports.updateUser = (req, res) => {
+module.exports.updateUser = (req, res, next) => {
   const { name, avatar } = req.body;
 
   User.findByIdAndUpdate(
@@ -105,17 +87,6 @@ module.exports.updateUser = (req, res) => {
       res.send({ data: user });
     })
     .catch((err) => {
-      console.error(err);
-      if (err.name === "ValidationError") {
-        return res.status(INVALID_DATA).send({ message: "Invalid data" });
-      }
-      if (err.name === "DocumentNotFoundError") {
-        return res
-          .status(DOCUMENT_NOT_FOUND)
-          .send({ message: "The requested resource is not found" });
-      }
-      return res
-        .status(SERVER_ERROR)
-        .send({ message: "An error has occured on the server" });
+      next(err);
     });
 };
