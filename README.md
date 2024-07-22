@@ -1,7 +1,7 @@
 # WTWR (What to Wear?): Back End
 
 This is the back-end part of the [WTWR project](https://github.com/Dayana-Pugachov/se_project_react).
-Here I create a server with an API for the application and connect it to a database.
+Here I create a server with a REST API for the application and connect it to a database.
 
 ## Functionality and techniques used
 
@@ -11,7 +11,7 @@ Here I create a server with an API for the application and connect it to a datab
 
 - Each route has its set of corresponding controllers.
 
-- All controllers have error handling logic that can be tested via Postman.
+- Centralized error handling.
 
 - For each resource there is a corresponding model that has validation logic for recources' properties.
 
@@ -21,6 +21,25 @@ Here I create a server with an API for the application and connect it to a datab
 - MongoDB
 - Postman
 - ESLint with "Airbnb JavaScript Style Guide" configuration
+- expressWinston logger
+- Joi validation
+- JWT
+
+### Deployment features
+
+- Google Cloud Platform
+- NGINX
+- Certbot
+- PM2
+
+## Domains
+
+**Front-end:**www.pugachovwtwr.jumpingcrab.com
+**Back-end:**api.pugachovwtwr.jumpingcrab.com
+
+##Visit the WTWR!
+[Take me to WTWR...](https://pugachovwtwr.jumpingcrab.com/)
+[The front-end repo:](https://github.com/Dayana-Pugachov/se_project_react)
 
 ## Running the Project
 

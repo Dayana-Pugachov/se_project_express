@@ -1,14 +1,12 @@
 const ClothingItem = require("../models/clothingItem");
-const { ForbiddenError } = require("../utils/error-constructors");
+const ForbiddenError = require("../utils/error-constructors/ForbiddenError");
 
 module.exports.getClothingItems = (req, res, next) => {
   ClothingItem.find({})
     .then((clothingItems) => {
       res.send({ data: clothingItems });
     })
-    .catch((err) => {
-      next(err);
-    });
+    .catch(next);
 };
 
 module.exports.createClothingItem = (req, res, next) => {
@@ -17,9 +15,7 @@ module.exports.createClothingItem = (req, res, next) => {
     .then((clothingItem) => {
       res.status(201).send({ data: clothingItem });
     })
-    .catch((err) => {
-      next(err);
-    });
+    .catch(next);
 };
 
 module.exports.deleteClothingItem = (req, res, next) => {
@@ -33,9 +29,7 @@ module.exports.deleteClothingItem = (req, res, next) => {
         .deleteOne()
         .then(() => res.send({ message: "Item has been deleted" }));
     })
-    .catch((err) => {
-      next(err);
-    });
+    .catch(next);
 };
 
 module.exports.likeClothingItem = (req, res, next) => {
@@ -46,9 +40,7 @@ module.exports.likeClothingItem = (req, res, next) => {
   )
     .orFail()
     .then((clothingItem) => res.send({ data: clothingItem }))
-    .catch((err) => {
-      next(err);
-    });
+    .catch(next);
 };
 
 module.exports.dislikeClothingItem = (req, res, next) => {
@@ -59,7 +51,5 @@ module.exports.dislikeClothingItem = (req, res, next) => {
   )
     .orFail()
     .then((clothingItem) => res.send({ data: clothingItem }))
-    .catch((err) => {
-      next(err);
-    });
+    .catch(next);
 };

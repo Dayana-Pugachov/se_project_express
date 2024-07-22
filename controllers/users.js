@@ -1,14 +1,7 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
-const {
-  INVALID_DATA,
-  DOCUMENT_NOT_FOUND,
-  SERVER_ERROR,
-  DUPLICATE_ERROR,
-  UNAUTHORIZED,
-} = require("../utils/errors");
-const { BadRequestError } = require("../utils/error-constructors");
+const BadRequestError = require("../utils/error-constructors/BadRequestError");
 const { JWT_SECRET } = require("../utils/config");
 
 module.exports.getCurrentUser = (req, res, next) => {
@@ -18,9 +11,7 @@ module.exports.getCurrentUser = (req, res, next) => {
     .then((user) => {
       res.send({ data: user });
     })
-    .catch((err) => {
-      next(err);
-    });
+    .catch(next);
 };
 
 module.exports.createUser = (req, res, next) => {
@@ -34,26 +25,8 @@ module.exports.createUser = (req, res, next) => {
         .status(201)
         .send({ name: user.name, avatar: user.avatar, email: user.email });
     })
-    .catch((err) => {
-      next(err);
-    });
+    .catch(next);
 };
-
-/*
-console.error(err);
-      if (err.code === 11000) {
-        return res
-          .status(DUPLICATE_ERROR)
-          .send({ message: "User with this email alredy exists" });
-      }
-      if (err.name === "ValidationError") {
-        return res.status(INVALID_DATA).send({ message: "Invalid data" });
-      }
-
-      return res
-        .status(SERVER_ERROR)
-        .send({ message: "An error has occured on the server" });
-*/
 
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
@@ -69,9 +42,7 @@ module.exports.login = (req, res, next) => {
       });
       res.send({ token });
     })
-    .catch((err) => {
-      next(err);
-    });
+    .catch(next);
 };
 
 module.exports.updateUser = (req, res, next) => {
@@ -86,7 +57,5 @@ module.exports.updateUser = (req, res, next) => {
     .then((user) => {
       res.send({ data: user });
     })
-    .catch((err) => {
-      next(err);
-    });
+    .catch(next);
 };
