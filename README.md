@@ -40,7 +40,6 @@ Here I create a server with a REST API for the application and connect it to a d
 ## Visit the WTWR!
 
 [Take me to WTWR...](https://pugachovwtwr.jumpingcrab.com/)
-
 [The front-end repo.](https://github.com/Dayana-Pugachov/se_project_react)
 
 ## Running the Project
